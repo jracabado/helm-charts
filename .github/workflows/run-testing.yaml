@@ -19,28 +19,26 @@ jobs:
     name: Get changed charts
     runs-on: ubuntu-22.04
     outputs:
-      charts: ${{ steps.changed-charts.all_modified_files }}
+      charts: ${{ steps.charts-diff.outputs.CHARTS }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 40
+          fetch-depth: 0
+
       - name: Run changed-files with dir_names
         id: changed-charts
         uses: tj-actions/changed-files@v34
         with:
-#          dir_names: "true"
-#          dir_names_max_depth: 2
           files: |
             charts/**
 
-      - name: list all changes
+      - name: Build charts diff
+        id: charts-diff
         run: |
-          for file in ${{ steps.changed-charts.outputs.all_modified_files }}; do
-            echo "$file was changed"
-          done
-          
-          echo "${{ steps.changed-charts.outputs.all_modified_files }}" | awk -F/ '{print $2}' | sort | uniq
+          temp=$(echo "${{ steps.changed-charts.outputs.all_modified_files }}" | sed 's/ /\n/g')
+          charts=$(echo -e $temp | awk -F/ '{print $2}' | sort | uniq)
+          echo "CHARTS=$charts" >> $GITHUB_OUTPUT
 
   install-chart:
     name: Install chart
