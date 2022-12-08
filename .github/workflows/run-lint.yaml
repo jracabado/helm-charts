@@ -28,9 +28,16 @@ jobs:
             helmv3
           helm: "${{ env.HELM_VERSION }}"
 
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.3.1
+
       - name: Run lint
         run: |
           make lint
+
+      - name: Run lint-ct
+        run: |
+          make lint-ct
 
       - name: Run template
         run: |
