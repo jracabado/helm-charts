@@ -10,25 +10,44 @@ on:
       - 'index.yaml'
       - '**.md'
 
+
 env:
   HELM_VERSION: 3.9.2
 
 jobs:
+  get-changed-charts:
+    name: Get changed charts
+    runs-on: ubuntu-22.04
+    outputs:
+      charts: ${{ steps.changed-charts.all_modified_files }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 40
+      - name: Run changed-files with dir_names
+        id: changed-charts
+        uses: tj-actions/changed-files@v34
+        with:
+#          dir_names: "true"
+#          dir_names_max_depth: 2
+          files: |
+            charts/**
+
+      - name: list all changes
+        run: |
+          for file in ${{ steps.changed-charts.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
+
   install-chart:
     name: Install chart
     runs-on: ubuntu-22.04
+    needs: get-changed-charts
+    if: ${{ needs.get-changed-charts.outputs.charts != '' }}
     strategy:
       matrix:
-        chart:
-          - victoria-metrics-agent
-          - victoria-metrics-alert
-          - victoria-metrics-anomaly
-          - victoria-metrics-auth
-          - victoria-metrics-cluster
-          - victoria-metrics-gateway
-          - victoria-metrics-k8s-stack
-          - victoria-metrics-operator
-          - victoria-metrics-single
+        chart: ${{ needs.get-changed-charts.outputs.charts }}
         k8s_version: ["v1.22.12", "v1.24.3", "v1.23.8"]
       fail-fast: false
     steps:
@@ -63,4 +82,8 @@ jobs:
           kubectl taint --all=true nodes node.cloudprovider.kubernetes.io/uninitialized- || true
 
       - name: Run chart-testing (install)
-        run: ct install --config .github/ci/ct.yaml --charts "charts/${{ matrix.chart }}"
+        run: |
+          chartName=$(echo ${{ matrix.chart }} | cut -d "/" -f 2)
+          valuesFile=$(ls hack/$chartName* | head -n 1)
+          
+          ct install --config .github/ci/ct.yaml --charts "{{ matrix.chart }} --helm-extra-set-args "--values $valuesFile""
