@@ -39,6 +39,8 @@ jobs:
           for file in ${{ steps.changed-charts.outputs.all_modified_files }}; do
             echo "$file was changed"
           done
+          
+          echo "${{ steps.changed-charts.outputs.all_modified_files }}" | awk -F/ '{print $2}' | sort | uniq
 
   install-chart:
     name: Install chart
