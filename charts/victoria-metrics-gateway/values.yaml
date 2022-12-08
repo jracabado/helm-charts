@@ -198,3 +198,5 @@ read:
 write:
   # -- Write endpoint without suffixes, victoriametrics or vminsert. Example http://victoroametrics:8428 or http://vminsert:8480
   url: ""
+
+#some test

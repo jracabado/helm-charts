@@ -181,3 +181,5 @@ monitoring:
     endpoint_url: ""
     extra_labels:
       job: "vmanomaly"
+
+#some test

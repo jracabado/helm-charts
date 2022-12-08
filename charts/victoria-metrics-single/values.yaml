@@ -667,3 +667,5 @@ server:
 
     # -- Extra scrape configs that will be appended to `server.scrape.config`
     extraScrapeConfigs: []
+
+#some test
