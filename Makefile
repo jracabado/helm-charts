@@ -58,10 +58,10 @@ template:
 	CMD="template charts/victoria-metrics-anomaly -f hack/vmanomaly-lint-hack.yaml" $(MAKE) $(HELM)
 
 lint-ct:
-	CMD="lint --config .github/ci/ct.yaml --all" $(MAKE) $(CTDDD)
+	CMD="lint --config .github/ci/ct.yaml --all" $(MAKE) $(CT)
 
 lint-ct-local:
-	CTDDD="ct-local" $(MAKE) lint-ct
+	CT="ct-local" $(MAKE) lint-ct
 
 lint-local:
 	HELM="helm-local" $(MAKE) lint
