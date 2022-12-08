@@ -36,7 +36,7 @@ jobs:
 
       - name: list all changes
         run: |
-          for file in ${{ steps.changed-charts.outputs.all_changed_files }}; do
+          for file in ${{ steps.changed-charts.outputs.all_modified_files }}; do
             echo "$file was changed"
           done
 
