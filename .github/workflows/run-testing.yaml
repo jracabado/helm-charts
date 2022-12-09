@@ -37,7 +37,8 @@ jobs:
         id: charts-diff
         run: |
           temp=$(echo "${{ steps.changed-charts.outputs.all_modified_files }}" | sed 's/ /\n/g')
-          charts=$(echo -e $temp | awk -F/ '{print $2}' | sort | uniq | sed 's/ /,/g')
+          charts=$(echo -e $temp | awk -F/ '{print $2}' | sort | uniq)
+          charts=$(IFS=,; printf '%s' "${charts[*]}")
           echo "CHARTS=[$charts]" >> $GITHUB_OUTPUT
 
   install-chart:
